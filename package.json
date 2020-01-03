@@ -1,0 +1,15 @@
+{
+  "name": "letterboxd-data-review",
+  "version": "1.0.0",
+  "description": "This is the Letterboxd Data Visualization app by Cindy Shi",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "film",
+    "data"
+  ],
+  "author": "Cindy Shi",
+  "license": "MIT"
+}
