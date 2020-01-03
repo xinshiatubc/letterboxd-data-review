@@ -290,8 +290,7 @@ function createBarChartContainer(yearCount){
 					      .style("top", (d3.event.pageY - 15) + "px")
   					}
   	var mouseleave = function(d) {
-					    tooltip
-					      .style("opacity", 0)
+					    tooltip.style("opacity", 0)
 					    d3.select(this)
 					      .style("stroke", "none")
   					}
