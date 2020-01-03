@@ -1,0 +1,164 @@
+body{
+	margin:0;
+	font-family: "Ubuntu",sans-serif;
+}
+
+/*=========TYPOGRAPHY=======*/
+h1{
+	font-family: 'Lora',serif;
+	color: #143774;
+	font-size: 2rem;
+	margin:0;
+}
+
+.subtitle{
+	font-weight: 700;
+	color:#1792d2;
+	font-size: .75rem;
+	margin: .25rem;
+}
+
+/*=========LAYOUT===========*/
+.container{
+	width:90%;
+	max-width: 900px;
+	margin: 0 auto;
+}
+
+.container-nav{
+	display: flex;
+	justify-content: space-between;
+}
+
+@media (max-width: 675px){
+	.container-nav{
+		flex-direction: column;
+	}
+
+	header{
+		text-align: center;
+	}
+}
+
+header{
+	background: #f8f8f8;
+	padding: 2em 0;
+}
+nav ul{
+	list-style: none;
+	padding: 0;
+	display: flex;
+	justify-content: center;
+}
+
+nav li{
+	margin-left: 2em;
+
+}
+
+nav a{
+	text-decoration: none;
+	color:#707070;
+	font-weight: 700;
+	padding: .25em 0;
+}
+
+nav a:hover, nav a:focus{
+	color: #1792d2;
+
+}
+
+.current-page{
+	border-bottom: 1px solid #707070;
+}
+
+.current-page:hover{
+	color:#707070;
+
+}
+
+@media (max-width: 675px){
+	nav ul{
+		flex-direction:column;
+	}
+
+	nav li{
+		margin: .5em 0;
+	}
+}
+#heatmap-container{
+	margin: 0 auto;
+	width: 85%;
+}
+      
+
+#heatmap-container svg {
+	height: 200px;
+	width: 100%;
+}
+
+.day.hover {
+  stroke: #6d6E70;
+  stroke-width: 2;
+}
+
+.bar:hover {
+    fill: #2f5491;
+}
+
+.bar{
+    fill: #5e8dc9;
+}
+
+
+.d3-tip {	
+  pointer-events: none;
+  position: absolute;
+  z-index: 9999;
+  width: 150px;
+  max-width: 150px;
+  overflow: hidden;
+  padding: 15px;
+  font-size: 12px;
+  line-height: 14px;
+  color: rgb(51, 51, 51);
+  background: rgba(248, 195, 205, 0.75);		
+}
+
+#chart-container{
+	margin: 0 auto;
+	width: 90%;
+
+}
+#chart-container h2{
+	text-align: center;
+	font-family: 'Lora',serif;
+	color: #143774;
+	font-size: 1rem;
+
+}
+#pie-container svg{
+	margin: 0 auto;
+}
+
+.tagList{
+	font-size: 1rem;
+	width:90%;
+	max-width: 900px;
+	margin-top: 2em;
+	margin: 0 auto;
+}
+
+.btn{
+	border: none;
+  	outline: none;
+  	background-color: white;
+  	cursor: pointer;
+  	font-family: "Ubuntu",sans-serif;
+
+}
+
+.btn:active{
+	background-color: #1792d2;
+}
+
