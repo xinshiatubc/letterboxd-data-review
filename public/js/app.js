@@ -70,7 +70,7 @@ function createHeatMapContainer(dailyCount){
     const svg = d3.select("#svg");
 
 
-    const height = 200;
+    const height = 250;
 	const width = 1000;
 	const margin = { left: 50, top: 10, right: 50, bottom: 10 };
 
@@ -118,26 +118,15 @@ function createHeatMapContainer(dailyCount){
             (d, i) => `translate(50, ${yearHeight * i + cellSize * 1.5})`
           );
 
-    year  .append("text")
-          .attr("x", -5)
-          .attr("y", -30)
-          .attr("text-anchor", "end")
-          .attr("font-size", 16)
-          .attr("font-weight", 550)
-          .attr("transform", "rotate(270)")
-          .text(d => d.key);
-
     const formatDay = d =>
           ["S", "M", "T", "W", "T", "F", "S"][d.getUTCDay()];
     const countDay = d => d.getUTCDay();
     const timeWeek = d3.utcSunday;
-    const formatDate = d3.utcFormat("%x");
 
     //map color
     const colorFn = d3
           .scaleSequential(d3.interpolatePuBu)
           .domain([Math.floor(minValue-1), Math.ceil(maxValue-3)]);
-    const format = d3.format("+.2%");
 
         
     year  .append("g")
@@ -155,6 +144,7 @@ function createHeatMapContainer(dailyCount){
 				    .append("div")
 				    .style("opacity", 0)
 				    .attr("class", "d3-tip");
+
 	var mouseover = function(d) {
 					    tooltip
 					      .style("opacity", 1)
@@ -171,11 +161,11 @@ function createHeatMapContainer(dailyCount){
 						  						+ d.value + " "+ text +"<br />";
 						  	for(var i = 0; i< d.detail.length; i++){
 						  		html_tooltip += "<li>" + d.detail[i] + "</li>";
-						  	}	
+						  	}
 					    tooltip
 					      .html(html_tooltip)
-					      .style("left", (d3.mouse(this)[0]) + "px")
-					      .style("top", (d3.mouse(this)[1]+540) + "px")
+					      .style("left", (d3.event.pageX + cellSize) + "px")
+					      .style("top", (d3.event.pageY - cellSize) + "px")
   					}
   	var mouseleave = function(d) {
 					    tooltip
@@ -191,15 +181,41 @@ function createHeatMapContainer(dailyCount){
         .attr("width", cellSize - 1.5)
         .attr("height", cellSize - 1.5)
         .attr("rx", 3).attr("ry", 3) // rounded corners
-        .attr(
-            "x",
-            d => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 10
-          )
+        .attr("x",
+            d => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 10)
         .attr("y", d => countDay(d.date) * cellSize + 0.5)
         .attr("fill", d => colorFn(d.value)) 
 		.on("mouseover", mouseover)
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
+
+	const legend = group.append('g')
+   						.attr('transform', `translate(${cellSize * 51 + 1.5 }, ${years.length * yearHeight + cellSize * 3})`)
+
+
+	const categories = [1,2,3,4,8]
+
+	
+	legend .selectAll('rect')
+		   .data(categories)
+		   .enter()
+		   .append('rect')
+		   .attr('fill', d => colorFn(d))
+		   .attr('x', (d, i) => cellSize * i )
+		   .attr('width', cellSize-1.5)
+		   .attr('height', cellSize-1.5)
+		   .attr("rx", 3).attr("ry", 3)
+
+    legend
+          .selectAll("text")
+          .data(categories)
+          .join("text")
+          .attr("transform", "")
+          .attr("x", (d, i) =>  + (cellSize) * i)
+          .attr("y", cellSize * 1.5)
+          .attr("text-anchor", "start")
+          .attr("font-size", 11)
+          .text(d => (d < 5? d :'>5'));
 	    
 }
 
@@ -236,17 +252,11 @@ function createBarChartContainer(yearCount){
 	  right: getRatio('right'),
 	  bottom: getRatio('bottom')
 	};
-/*
-	var x = d3.scaleOrdinal()
-	    .rangeRoundBands([0, width], .1);
-*/
+
 	var x = d3.scaleBand()
 	.rangeRound([0, width])
 	.padding(0.1);
-	/*
-	var y = d3.scale.linear()
-	    .range([height, 0]);
-*/
+
 	var y = d3.scaleLinear()
 		.rangeRound([height, 0]);
 
@@ -273,8 +283,8 @@ function createBarChartContainer(yearCount){
 						 }  	
 					    tooltip
 					      .html(html_tooltip)
-					      .style("left", (d3.mouse(this)[0]+70) + "px")
-					      .style("top", (d3.mouse(this)[1]) + "px")
+					      .style("left", (d3.event.pageX + 10) + "px")
+					      .style("top", (d3.event.pageY - 15) + "px")
   					}
   	var mouseleave = function(d) {
 					    tooltip
