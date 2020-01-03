@@ -11,7 +11,6 @@ var Catagories = {
 			"Film Studies","vimff","cinema salon"],
 	Others:["52filmsbywomen2019","commentary"]
 }
-
 let taglist = {};
 let yearCount = {};
 let dailyCount = {};
@@ -162,9 +161,11 @@ function createHeatMapContainer(dailyCount){
 						  	for(var i = 0; i< d.detail.length; i++){
 						  		html_tooltip += "<li>" + d.detail[i] + "</li>";
 						  	}
+						var	leftPos = ( (window.innerWidth - d3.event.pageX) < 200 ) ?
+										d3.event.pageX - 10 * cellSize : d3.event.pageX + cellSize;
 					    tooltip
 					      .html(html_tooltip)
-					      .style("left", (d3.event.pageX + cellSize) + "px")
+					      .style("left", (leftPos) + "px")
 					      .style("top", (d3.event.pageY - cellSize) + "px")
   					}
   	var mouseleave = function(d) {
@@ -280,10 +281,12 @@ function createBarChartContainer(yearCount){
 						  	for(var i = 0; i< d.detail.length; i++){
 						  		html_tooltip += "<li>" + d.detail[i] + "</li>";
 						  	}	
-						 }  	
+						 }
+						var	leftPos = ( (window.innerWidth - d3.event.pageX) < 200 ) ?
+							d3.event.pageX - 23 * barWidth : d3.event.pageX + barWidth;  	
 					    tooltip
 					      .html(html_tooltip)
-					      .style("left", (d3.event.pageX + 10) + "px")
+					      .style("left", (leftPos) + "px")
 					      .style("top", (d3.event.pageY - 15) + "px")
   					}
   	var mouseleave = function(d) {
