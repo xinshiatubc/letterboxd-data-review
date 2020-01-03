@@ -70,26 +70,46 @@ function createHeatMapContainer(dailyCount){
     const svg = d3.select("#svg");
 
 
-      const { width, height } = document
-        .getElementById("svg")
-        .getBoundingClientRect();
+    const height = 200;
+	const width = 1000;
+	const margin = { left: 50, top: 10, right: 50, bottom: 10 };
 
-        const years = d3
+	const getRatio = side => (margin[side] / width) * 100 + '%';
+
+	const marginRatio = {
+	  left: getRatio('left'),
+	  top: getRatio('top'),
+	  right: getRatio('right'),
+	  bottom: getRatio('bottom')
+	};
+
+	const container = d3.select('#svg')
+	  	.style('padding',
+	    		marginRatio.top + ' ' + marginRatio.right + ' ' +
+	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
+	  	.attr('preserveAspectRatio', 'xMinYMin meet')
+	  	.attr('viewBox','0 0 ' +
+	      (width + margin.left + margin.right) +
+	      ' ' +
+	      (height + margin.top + margin.bottom)
+	  	);	
+
+	const cellSize = width / 52;
+    const yearHeight = cellSize * 7;
+
+    const years = d3
           .nest()
           .key(d => d.date.getUTCFullYear())
           .entries(dateValues)
           .reverse();
 
-        const values = dateValues.map(c => c.value);
-        const maxValue = d3.max(values);
-        const minValue = d3.min(values);
+    const values = dateValues.map(c => c.value);
+    const maxValue = d3.max(values);
+    const minValue = d3.min(values);
 
-        const cellSize = 15;
-        const yearHeight = cellSize * 7;
+   	const group = svg.append("g");
 
-        const group = svg.append("g");
-
-        const year = group
+    const year = group
           .selectAll("g")
           .data(years)
           .join("g")
@@ -98,8 +118,7 @@ function createHeatMapContainer(dailyCount){
             (d, i) => `translate(50, ${yearHeight * i + cellSize * 1.5})`
           );
 
-        year
-          .append("text")
+    year  .append("text")
           .attr("x", -5)
           .attr("y", -30)
           .attr("text-anchor", "end")
@@ -108,18 +127,20 @@ function createHeatMapContainer(dailyCount){
           .attr("transform", "rotate(270)")
           .text(d => d.key);
 
-        const formatDay = d =>
+    const formatDay = d =>
           ["S", "M", "T", "W", "T", "F", "S"][d.getUTCDay()];
-        const countDay = d => d.getUTCDay();
-        const timeWeek = d3.utcSunday;
-        const formatDate = d3.utcFormat("%x");
-        const colorFn = d3
+    const countDay = d => d.getUTCDay();
+    const timeWeek = d3.utcSunday;
+    const formatDate = d3.utcFormat("%x");
+
+    //map color
+    const colorFn = d3
           .scaleSequential(d3.interpolatePuBu)
           .domain([Math.floor(minValue-1), Math.ceil(maxValue-3)]);
-        const format = d3.format("+.2%");
+    const format = d3.format("+.2%");
 
-        year
-          .append("g")
+        
+    year  .append("g")
           .attr("text-anchor", "end")
           .selectAll("text")
           .data(d3.range(7).map(i => new Date(1995, 0, i)))
@@ -129,29 +150,7 @@ function createHeatMapContainer(dailyCount){
           .attr("dy", "0.31em")
           .attr("font-size", 12)
           .text(formatDay);
-/*
 
-        year
-          .append("g")
-          .selectAll("rect")
-          .data(d => d.values)
-          .join("rect")
-          .attr("width", cellSize - 1.5)
-          .attr("height", cellSize - 1.5)
-          .attr("rx", 3).attr("ry", 3) // rounded corners
-          .attr(
-            "x",
-            (d, i) => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 10
-          )
-          .attr("y", d => countDay(d.date) * cellSize + 0.5)
-          .attr("fill", d => colorFn(d.value))
-          .on("mouseover", function(d) {
-		      d3.select(this).style("stroke", "black");
-		    })
-		  .on("mouseout", function(d) {
-		       d3.select(this).style("stroke", "none");
-		    });
-		    */
 	var tooltip = d3.select('div#heatmap-container')
 				    .append("div")
 				    .style("opacity", 0)
@@ -185,20 +184,19 @@ function createHeatMapContainer(dailyCount){
 					      .style("stroke", "none")
   					}
 
-	  year
-          .append("g")
-          .selectAll("rect")
-          .data(dateValues)
-          .join("rect")
-          .attr("width", cellSize - 1.5)
-          .attr("height", cellSize - 1.5)
-          .attr("rx", 3).attr("ry", 3) // rounded corners
-          .attr(
+	year.append("g")
+        .selectAll("rect")
+        .data(dateValues)
+        .join("rect")
+        .attr("width", cellSize - 1.5)
+        .attr("height", cellSize - 1.5)
+        .attr("rx", 3).attr("ry", 3) // rounded corners
+        .attr(
             "x",
             d => timeWeek.count(d3.utcYear(d.date), d.date) * cellSize + 10
           )
-          .attr("y", d => countDay(d.date) * cellSize + 0.5)
-          .attr("fill", d => colorFn(d.value))
+        .attr("y", d => countDay(d.date) * cellSize + 0.5)
+        .attr("fill", d => colorFn(d.value)) 
 		.on("mouseover", mouseover)
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
