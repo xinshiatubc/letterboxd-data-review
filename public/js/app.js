@@ -17,6 +17,7 @@ let dailyCount = {};
 getData()
 	.then(function(){
 		//createTagContainer(taglist);
+		createPieChartContainer(taglist);
 		createBarChartContainer(yearCount);
 		createHeatMapContainer(dailyCount);
 	});
@@ -221,7 +222,110 @@ function createHeatMapContainer(dailyCount){
 }
 
 
-function createPieContainer(yearCount){
+function createPieChartContainer(taglist){
+
+	let streamingData = [];
+	for(tag in taglist){
+		if(Catagories.Streaming.includes(tag) ){
+			var platformItem = {};
+			platformItem.platform = tag;
+			platformItem.count = taglist[tag].length;
+			platformItem.detail = taglist[tag];
+			streamingData.push(platformItem);
+		}
+	}
+
+	const width = 300;
+	const height = 300;
+	const radius =  width/2;
+	var donutWidth = 75; //This is the size of the hole in the middle
+
+	const margin = { left: 10, top: 10, right: 10, bottom: 10 };
+
+	const getRatio = side => (margin[side] / width) * 100 + '%';
+
+	const marginRatio = {
+	  left: getRatio('left'),
+	  top: getRatio('top'),
+	  right: getRatio('right'),
+	  bottom: getRatio('bottom')
+	};
+
+	//var color = d3.scaleOrdinal(d3.schemeBlues[9]);
+	
+	var color = d3
+          .scaleSequential(d3.interpolateGnBu)
+          .domain([0, 71]);
+
+
+	var donutTip = d3.select("#pie-container")
+					.append("div")
+					.style("opacity", 0)
+    				.attr("class", "d3-tip");
+
+   	var mouseover = function(d) {
+					    donutTip
+					      .style("opacity", 1)
+					    d3.select(this)
+					      .style("opacity", 1)
+					      .style("stroke","black");
+  					};
+  	
+    var mousemove = function (d, i) {
+  						var html_tooltip = "<strong>" + d.data.platform + "</strong> <br /><br />" 
+						  						+ d.data.count +"<br />";
+
+        				d3  .select(this)
+        					.style("opacity", 1);
+
+        				donutTip.html(html_tooltip)
+					      		.style("opacity", 1)
+            					.style("left", (d3.event.pageX + 10) + "px")
+            					.style("top", (d3.event.pageY - 15) + "px");
+    				}
+
+  	var mouseleave = function (d, i) {
+        d3.select(this).style("stroke", "none");     
+        donutTip.style("opacity", 0);
+
+    }
+
+    
+	var svg = d3.select('#pie-container')
+     			.append('svg')
+     			.style('padding',
+	    		marginRatio.top + ' ' + marginRatio.right + ' ' +
+	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
+      			.attr("width", '30%')
+         		.attr("height", '30%')
+         		.attr('viewBox', (-width / 2) + ' ' + (-height / 2) + ' ' + width + ' ' + height)
+         		.attr('preserveAspectRatio', 'xMinYMin')
+     			.append('g');
+	svg.append("text")
+	       .attr("dy", ".35em")
+	      .style("text-anchor", "middle")
+	      .text(function(d) { return 'Streaming'; });
+
+    var arc = d3.arc()
+     			.innerRadius(radius - donutWidth)
+     			.outerRadius(radius);
+
+	var pie = d3.pie()
+	     		.value(d => d.count)
+	     		.sortValues(function(a, b) { return a-b; })
+	     		.padAngle(.005);
+
+	var path=svg.selectAll('path')
+	     		.data(pie(streamingData))
+	     		.enter()
+	     		.append('path')
+	     		.attr('d', arc)
+	     		.attr('fill', d => color(d.data.count))
+	     		.attr('transform', 'translate(0, 0)')
+				.on("mouseover", mouseover)
+				.on("mousemove", mousemove)
+				.on("mouseleave", mouseleave);
+
 
 }
 
@@ -238,7 +342,6 @@ function createBarChartContainer(yearCount){
 	}
 
 	recentData = data.splice(-2,2);
-	console.log(recentData);
 
 	const height = 200;
 	const width = 700;
@@ -275,8 +378,9 @@ function createBarChartContainer(yearCount){
 					      .style("opacity", 1)
   					};
   	var mousemove = function(d) {
-					  	var html_tooltip = "<strong>" + d.year + ":</strong> <span style='color:red'>" 
-						  						+ d.frequency + "</span><br />";
+  						var text = (d.frequency > 1) ? " films":" film";
+					  	var html_tooltip = "<strong>" + d.year + " : </strong> <span>" 
+						  						+ d.frequency + text +"</span><br />";
 						if(d.detail.length < 20){
 						  	for(var i = 0; i< d.detail.length; i++){
 						  		html_tooltip += "<li>" + d.detail[i] + "</li>";
@@ -322,7 +426,7 @@ function createBarChartContainer(yearCount){
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
 
-	createPieContainer(recentData);
+	//createPieContainer(recentData);
 }
 
 function createTagContainer(taglist){
