@@ -232,8 +232,8 @@ function createPieChartContainer(taglist){
 	function pieChart (dataSet) {
 	  	
 	  	var color = d3
-          .scaleSequential(d3.interpolateGnBu)
-          .domain([0, 71]);
+          .scaleSequential(d3.interpolatePuBu)
+          .domain([-10, 56]);
 
 		var pie = d3.pie()
 	     		.value(d => d.count)
@@ -392,6 +392,29 @@ function createPieChartContainer(taglist){
 
 	var domPieChart = svg.attr('class', 'pie-chart')
 	  					 .call(pieChart.data(streamingData));
+	
+	d3.select("input[value=\"theatrical\"]").
+		on("click", function () {
+			
+				d3.select(this).property("checked", true);
+				d3.select("input[value=\"streaming\"]").property("checked", false);
+				domPieChart.call(pieChart.data(theatricalData));
+			
+
+	    });
+
+	d3.select("input[value=\"streaming\"]").
+		on("click", function () {
+			
+			
+				d3.select(this).property("checked", true);
+				d3.select("input[value=\"theatrical\"]").property("checked", false);
+				domPieChart.call(pieChart.data(streamingData));
+
+			
+
+	    });
+
 
 	d3.select("button#theatrical")
 	  .on("click", function () {

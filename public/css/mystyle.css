@@ -154,6 +154,14 @@ h2{
 	display: flex;
 	justify-content: center;
 }
+#pie-container li{
+	margin-left: 2em;
+	font-family: "Ubuntu",sans-serif;
+	font-size: .7rem;
+
+}
+
+
 
 .tagList{
 	font-size: 1rem;
