@@ -131,6 +131,7 @@ nav a:hover, nav a:focus{
 	width: 90%;
 
 }
+
 h2{
 	text-align: center;
 	font-family: 'Lora',serif;
@@ -138,8 +139,20 @@ h2{
 	font-size: 1rem;
 
 }
-#pie-container svg{
+#pie-container{
 	margin: 0 auto;
+
+}
+#pie-container svg{
+    display: block;
+    margin: 0 auto;
+}
+
+#pie-container ul{
+	list-style: none;
+	padding: 0;
+	display: flex;
+	justify-content: center;
 }
 
 .tagList{

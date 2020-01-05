@@ -42,6 +42,8 @@ function csvToArray(text) {
     return ret;
 };
 
+
+
 function createHeatMapContainer(dailyCount){
 	var dateData =[];
 	for(date in dailyCount){
@@ -218,114 +220,187 @@ function createHeatMapContainer(dailyCount){
           .attr("text-anchor", "start")
           .attr("font-size", 11)
           .text(d => (d < 5? d :'>5'));
-	    
-}
+	 }
+
+
+
 
 
 function createPieChartContainer(taglist){
 
-	let streamingData = [];
+
+	function pieChart (dataSet) {
+	  	
+	  	var color = d3
+          .scaleSequential(d3.interpolateGnBu)
+          .domain([0, 71]);
+
+		var pie = d3.pie()
+	     		.value(d => d.count)
+	     		.sortValues(function(a, b) { return a-b; })
+	     		.padAngle(.005);    
+
+		var animationDuration = 750,
+		    data = [],
+		    innerRadius = 0,
+		    outerRadius = 100,
+		    arc = d3.arc();
+
+		function updateTween (d) {
+		    var i = d3.interpolate(this._current, d);
+		    this._current = i(0);
+		    return function(t) {
+		      return arc(i(t));
+		    };
+		  }
+
+	  function exitTween (d) {
+	    var end = Object.assign({}, this._current, { startAngle: this._current.endAngle });
+	    var i = d3.interpolate(d, end);
+	    return function(t) {
+	      return arc(i(t));
+	    };
+	  }
+
+	  function joinKey (d) {
+	    return d.data.count;
+	  }
+
+	  function pieChart (context) {
+
+
+
+	  	var donutTip = d3.select("#pie-container")
+					.append("div")
+					.style("opacity", 0)
+    				.attr("class", "d3-tip");
+
+	   	var mouseover = function(d) {
+						    donutTip
+						      .style("opacity", 1)
+						    d3.select(this)
+						      .style("opacity", 1)
+						      .style("stroke","black");
+	  					};
+	  	
+	    var mousemove = function (d, i) {
+	  						var html_tooltip = "<strong>" + d.data.name + "</strong> <br /><br />" 
+							  						+ d.data.count +"<br />";
+
+	        				d3  .select(this)
+	        					.style("opacity", 1);
+
+	        				donutTip.html(html_tooltip)
+						      		.style("opacity", 1)
+	            					.style("left", (d3.event.pageX + 10) + "px")
+	            					.style("top", (d3.event.pageY - 15) + "px");
+	    				}
+
+	  	var mouseleave = function (d, i) {
+	        d3.select(this).style("stroke", "none");     
+	        donutTip.style("opacity", 0);
+
+	    }
+
+	    var slices = context.selectAll('.slice').data(pie(data),joinKey);
+
+	    var oldSlices = slices.exit();
+
+	    var newSlices = slices.enter().append('path')
+	      .each(function(d) { this._current = Object.assign({}, d, { startAngle: d.endAngle }); })
+	      .attr('class', 'slice')
+	      .attr('fill', d => color(d.data.count))
+	      .on("mouseover", mouseover)
+		  .on("mousemove", mousemove)
+		  .on("mouseleave", mouseleave);
+
+	    var t = d3.transition().duration(animationDuration);
+
+	    arc.innerRadius(innerRadius).outerRadius(outerRadius);
+
+	    oldSlices
+	      .transition(t)
+	        .attrTween('d', exitTween)
+	        .remove();
+
+	    var t2 = t.transition();
+	    slices
+	      .transition(t2)
+	        .attrTween('d', updateTween);
+
+	    var t3 = t2.transition();
+	    newSlices
+	      .transition(t3)
+	        .attrTween('d', updateTween);
+	  }
+
+	  pieChart.data = function (_) {
+	    return arguments.length ? (data = _, pieChart) : data;
+	  };
+
+	  pieChart.innerRadius = function (_) {
+	    return arguments.length ? (innerRadius = _, pieChart) : innerRadius;
+	  };
+
+	  pieChart.outerRadius = function (_) {
+	    return arguments.length ? (outerRadius = _, pieChart) : outerRadius;
+	  };
+
+	  return pieChart;
+	}
+
+
+	
+	let streamingData = [], theatricalData = [];
+	let streamingCount = 0, theatricalCount = 0;
+
 	for(tag in taglist){
 		if(Catagories.Streaming.includes(tag) ){
 			var platformItem = {};
-			platformItem.platform = tag;
+			platformItem.name = tag;
 			platformItem.count = taglist[tag].length;
 			platformItem.detail = taglist[tag];
 			streamingData.push(platformItem);
+			streamingCount += platformItem.count;
+
+		}
+		if(Catagories.Venue.includes(tag)){
+			var theatricalItem = {};
+			theatricalItem.name = tag;
+			theatricalItem.count = taglist[tag].length;
+			theatricalItem.detail = taglist[tag];
+			theatricalData.push(theatricalItem);
+			theatricalCount += theatricalItem.count;
+
 		}
 	}
 
 	const width = 300;
 	const height = 300;
-	const radius =  width/2;
-	var donutWidth = 75; //This is the size of the hole in the middle
+	const radius =  width/2 - 10;
+	const donutWidth = 75;
 
-	const margin = { left: 10, top: 10, right: 10, bottom: 10 };
+	var pieChart = pieChart().outerRadius(radius).innerRadius(donutWidth);
 
-	const getRatio = side => (margin[side] / width) * 100 + '%';
-
-	const marginRatio = {
-	  left: getRatio('left'),
-	  top: getRatio('top'),
-	  right: getRatio('right'),
-	  bottom: getRatio('bottom')
-	};
-
-	//var color = d3.scaleOrdinal(d3.schemeBlues[9]);
-	
-	var color = d3
-          .scaleSequential(d3.interpolateGnBu)
-          .domain([0, 71]);
-
-
-	var donutTip = d3.select("#pie-container")
-					.append("div")
-					.style("opacity", 0)
-    				.attr("class", "d3-tip");
-
-   	var mouseover = function(d) {
-					    donutTip
-					      .style("opacity", 1)
-					    d3.select(this)
-					      .style("opacity", 1)
-					      .style("stroke","black");
-  					};
-  	
-    var mousemove = function (d, i) {
-  						var html_tooltip = "<strong>" + d.data.platform + "</strong> <br /><br />" 
-						  						+ d.data.count +"<br />";
-
-        				d3  .select(this)
-        					.style("opacity", 1);
-
-        				donutTip.html(html_tooltip)
-					      		.style("opacity", 1)
-            					.style("left", (d3.event.pageX + 10) + "px")
-            					.style("top", (d3.event.pageY - 15) + "px");
-    				}
-
-  	var mouseleave = function (d, i) {
-        d3.select(this).style("stroke", "none");     
-        donutTip.style("opacity", 0);
-
-    }
-
-    
 	var svg = d3.select('#pie-container')
      			.append('svg')
-     			.style('padding',
-	    		marginRatio.top + ' ' + marginRatio.right + ' ' +
-	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
-      			.attr("width", '30%')
-         		.attr("height", '30%')
+      			.attr("width", "30%")
+         		.attr("height", "30%")
          		.attr('viewBox', (-width / 2) + ' ' + (-height / 2) + ' ' + width + ' ' + height)
          		.attr('preserveAspectRatio', 'xMinYMin')
-     			.append('g');
-	svg.append("text")
-	       .attr("dy", ".35em")
-	      .style("text-anchor", "middle")
-	      .text(function(d) { return 'Streaming'; });
+         		.append('g');
 
-    var arc = d3.arc()
-     			.innerRadius(radius - donutWidth)
-     			.outerRadius(radius);
+	var domPieChart = svg.attr('class', 'pie-chart')
+	  					 .call(pieChart.data(streamingData));
 
-	var pie = d3.pie()
-	     		.value(d => d.count)
-	     		.sortValues(function(a, b) { return a-b; })
-	     		.padAngle(.005);
-
-	var path=svg.selectAll('path')
-	     		.data(pie(streamingData))
-	     		.enter()
-	     		.append('path')
-	     		.attr('d', arc)
-	     		.attr('fill', d => color(d.data.count))
-	     		.attr('transform', 'translate(0, 0)')
-				.on("mouseover", mouseover)
-				.on("mousemove", mousemove)
-				.on("mouseleave", mouseleave);
-
+	d3.select("button#theatrical")
+	  .on("click", function () {
+	        domPieChart.call(pieChart.data(theatricalData));
+	    });
+	d3.select("button#streaming")
+	  .on("click", function () {
+	       domPieChart.call(pieChart.data(streamingData));
+	    });
 
 }
 
