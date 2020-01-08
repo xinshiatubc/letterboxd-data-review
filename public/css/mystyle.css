@@ -136,7 +136,7 @@ h2{
 	text-align: center;
 	font-family: 'Lora',serif;
 	color: #143774;
-	font-size: 1rem;
+	font-size: 1.2rem;
 
 }
 #pie-container{
@@ -157,11 +157,9 @@ h2{
 #pie-container li{
 	margin-left: 2em;
 	font-family: "Ubuntu",sans-serif;
-	font-size: .7rem;
+	font-size: 0.9rem;
 
 }
-
-
 
 .tagList{
 	font-size: 1rem;

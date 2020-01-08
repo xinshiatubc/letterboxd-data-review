@@ -1,19 +1,21 @@
-const csvUrl = 'diary.csv';
+var csvUrl = 'diary.csv';
 
 var Catagories = {
 	Streaming: ["netflix","amazon prime","youtube","mubi", "kanopy","criterion channel","itunes",
 			"vimeo","Le Cinéma Club","crave","instagram"],
 	Ticket: ["cineplex","viff","cinematheque","rio"],
-	Venue:["scotiabank","fifth ave","international village","vancity","cinematheque","moa",
-		   "rio","park royal","park","marine drive","cdm","orpheum","new beverly cinema","playhouse","centre"],
+	Venue:["scotiabank","fifth ave","international village","vancity","cinematheque",
+		   "rio","park royal","park","marine drive","orpheum","new beverly cinema","playhouse","centre"],
 	Format:["3d","35mm","live score","70mm"],
 	Series:["iff19","bhm","24hrmm2019","viff19","doxa19","vaff","rapture",
 			"Film Studies","vimff","cinema salon"],
 	Others:["52filmsbywomen2019","commentary"]
 }
+
 var taglist = {};
 var yearCount = {};
 var dailyCount = {};
+
 getData()
 	.then(function(){
 		//createTagContainer(taglist);
@@ -46,16 +48,16 @@ function csvToArray(text) {
 
 function createHeatMapContainer(dailyCount){
 	var dateData =[];
+
 	for(date in dailyCount){
-		if(date.startsWith('2019')){
+		
 			var day = {};
 			day.date = date;
 			day.dow = moment(date).day();
 			day.detail = dailyCount[date];
 			day.count = dailyCount[date].length;
 			dateData.push(day);
-		}
-
+		
 	}
 
     var dateValues = dateData.map(function(dv){
@@ -71,9 +73,10 @@ function createHeatMapContainer(dailyCount){
 
     var svg = d3.select("#svg");
 
-
     var height = 250;
 	var width = 1000;
+
+	//responsive 
 	var margin = { left: 50, top: 10, right: 50, bottom: 10 };
 
 	var getRatio = side => (margin[side] / width) * 100 + '%';
@@ -91,8 +94,7 @@ function createHeatMapContainer(dailyCount){
 	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
 	  	.attr('preserveAspectRatio', 'xMinYMin meet')
 	  	.attr('viewBox','0 0 ' +
-	      (width + margin.left + margin.right) +
-	      ' ' +
+	      (width + margin.left + margin.right) + ' ' +
 	      (height + margin.top + margin.bottom)
 	  	);	
 
@@ -120,21 +122,21 @@ function createHeatMapContainer(dailyCount){
             (d, i) => `translate(50, ${yearHeight * i + cellSize * 1.5})`
           );
 
-    const formatDay = d =>
-          ["S", "M", "T", "W", "T", "F", "S"][d.getUTCDay()];
-    const countDay = d => d.getUTCDay();
-    const timeWeek = d3.utcSunday;
-
     //map color
     const colorFn = d3
           .scaleSequential(d3.interpolatePuBu)
-          .domain([Math.floor(minValue-1), Math.ceil(maxValue-3)]);
+          .domain([0, 5]);
 
-        
+    //label day of week 
+    var formatDay = d =>
+          ["S", "M", "T", "W", "T", "F", "S"][d.getUTCDay()];
+    var countDay = d => d.getUTCDay();
+    var timeWeek = d3.utcSunday;
+
     year  .append("g")
           .attr("text-anchor", "end")
           .selectAll("text")
-          .data(d3.range(7).map(i => new Date(1995, 0, i)))
+          .data(d3.range(7).map(i => new Date(2017, 0, i)))
           .join("text")
           .attr("x", -5)
           .attr("y", d => (countDay(d) + 0.5) * cellSize)
@@ -142,14 +144,14 @@ function createHeatMapContainer(dailyCount){
           .attr("font-size", 12)
           .text(formatDay);
 
+    //construct tooltip
 	var tooltip = d3.select('div#heatmap-container')
 				    .append("div")
 				    .style("opacity", 0)
 				    .attr("class", "d3-tip");
 
 	var mouseover = function(d) {
-					    tooltip
-					      .style("opacity", 1)
+					    tooltip.style("opacity", 1)
 					    d3.select(this)
 					      .style("opacity", 1)
 					      .style("stroke", "black")
@@ -172,10 +174,8 @@ function createHeatMapContainer(dailyCount){
 					      .style("top", (d3.event.pageY - cellSize) + "px")
   					}
   	var mouseleave = function(d) {
-					    tooltip
-					      .style("opacity", 0)
-					    d3.select(this)
-					      .style("stroke", "none")
+					    tooltip.style("opacity", 0)
+					    d3.select(this).style("stroke", "none")
   					}
 
 	year.append("g")
@@ -193,8 +193,10 @@ function createHeatMapContainer(dailyCount){
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
 
+	//construct legend
 	var legend = group.append('g')
-   						.attr('transform', `translate(${cellSize * 51 + 1.5 }, ${years.length * yearHeight + cellSize * 3})`)
+   						.attr('transform', `translate(${cellSize * 51 + 1.5 }, 
+   							${years.length * yearHeight + cellSize * 3})`)
 
 
 	var categories = [1,2,3,4,8]
@@ -210,8 +212,7 @@ function createHeatMapContainer(dailyCount){
 		   .attr('height', cellSize-1.5)
 		   .attr("rx", 3).attr("ry", 3)
 
-    legend
-          .selectAll("text")
+    legend.selectAll("text")
           .data(categories)
           .join("text")
           .attr("transform", "")
@@ -229,8 +230,34 @@ function createHeatMapContainer(dailyCount){
 function createPieChartContainer(taglist){
 
 
+	var streamingData = [], theatricalData = [];
+	var streamingCount = 0, theatricalCount = 0, total;
+
+	for(tag in taglist){
+		if(Catagories.Streaming.includes(tag) ){
+			var platformItem = {};
+			platformItem.name = tag;
+			platformItem.count = taglist[tag].length;
+			platformItem.detail = taglist[tag];
+			streamingData.push(platformItem);
+			streamingCount += platformItem.count;
+
+		}
+		if(Catagories.Venue.includes(tag)){
+			var theatricalItem = {};
+			theatricalItem.name = tag;
+			theatricalItem.count = taglist[tag].length;
+			theatricalItem.detail = taglist[tag];
+			theatricalData.push(theatricalItem);
+			theatricalCount += theatricalItem.count;
+
+		}
+	}
+
+	
+
 	function pieChart (dataSet) {
-	  	
+
 	  	var color = d3
           .scaleSequential(d3.interpolatePuBu)
           .domain([-10, 56]);
@@ -268,8 +295,6 @@ function createPieChartContainer(taglist){
 
 	  function pieChart (context) {
 
-
-
 	  	var donutTip = d3.select("#pie-container")
 					.append("div")
 					.style("opacity", 0)
@@ -284,9 +309,11 @@ function createPieChartContainer(taglist){
 	  					};
 	  	
 	    var mousemove = function (d, i) {
-	  						var html_tooltip = "<strong>" + d.data.name + "</strong> <br /><br />" 
-							  						+ d.data.count +"<br />";
-
+	    				
+	    					var percentage = Math.ceil(d.data.count / total * 100) + "%" 
+	    					var text = (d.data.count > 1)? "films":"film";
+	  						var html_tooltip = "<strong>" + d.data.name + " : "  + percentage + "</strong> <br /><br />" 
+							  						+ d.data.count + " " + text + "<br />";
 	        				d3  .select(this)
 	        					.style("opacity", 1);
 
@@ -318,20 +345,18 @@ function createPieChartContainer(taglist){
 
 	    arc.innerRadius(innerRadius).outerRadius(outerRadius);
 
-	    oldSlices
-	      .transition(t)
-	        .attrTween('d', exitTween)
-	        .remove();
+	    oldSlices.transition(t)
+	        	.attrTween('d', exitTween)
+	        	.remove();
 
 	    var t2 = t.transition();
-	    slices
-	      .transition(t2)
-	        .attrTween('d', updateTween);
+	    slices.transition(t2)
+	        	.attrTween('d', updateTween);
 
 	    var t3 = t2.transition();
-	    newSlices
-	      .transition(t3)
-	        .attrTween('d', updateTween);
+	    newSlices.transition(t3)
+	        	 .attrTween('d', updateTween);
+
 	  }
 
 	  pieChart.data = function (_) {
@@ -350,31 +375,6 @@ function createPieChartContainer(taglist){
 	}
 
 
-	
-	var streamingData = [], theatricalData = [];
-	var streamingCount = 0, theatricalCount = 0;
-
-	for(tag in taglist){
-		if(Catagories.Streaming.includes(tag) ){
-			var platformItem = {};
-			platformItem.name = tag;
-			platformItem.count = taglist[tag].length;
-			platformItem.detail = taglist[tag];
-			streamingData.push(platformItem);
-			streamingCount += platformItem.count;
-
-		}
-		if(Catagories.Venue.includes(tag)){
-			var theatricalItem = {};
-			theatricalItem.name = tag;
-			theatricalItem.count = taglist[tag].length;
-			theatricalItem.detail = taglist[tag];
-			theatricalData.push(theatricalItem);
-			theatricalCount += theatricalItem.count;
-
-		}
-	}
-
 	var width = 300;
 	var height = 300;
 	var radius =  width/2 - 10;
@@ -388,27 +388,44 @@ function createPieChartContainer(taglist){
          		.attr("height", "30%")
          		.attr('viewBox', (-width / 2) + ' ' + (-height / 2) + ' ' + width + ' ' + height)
          		.attr('preserveAspectRatio', 'xMinYMin')
-         		.append('g');
+         		.append('g')
+         		;
+
+
+
+    total = streamingCount;
 
 	var domPieChart = svg.attr('class', 'pie-chart')
 	  					 .call(pieChart.data(streamingData));
+/*
+	var text = Math.round(streamingCount / (streamingCount + theatricalCount) * 100) + "%";
+
+	svg	.append("text")
+       	.attr("dy", "0em")
+      	.style("text-anchor", "middle")
+      	.attr("class","text-inside")
+      	.transition()
+        .delay(2000)
+      	.text(text);
+	*/
 	
 	d3.select("input[value=\"theatrical\"]").
 		on("click", function () {
 			
 				d3.select(this).property("checked", true);
 				d3.select("input[value=\"streaming\"]").property("checked", false);
+				total = theatricalCount;
 				domPieChart.call(pieChart.data(theatricalData));
-			
+				
 
 	    });
 
 	d3.select("input[value=\"streaming\"]").
 		on("click", function () {
 			
-			
 				d3.select(this).property("checked", true);
 				d3.select("input[value=\"theatrical\"]").property("checked", false);
+				total = streamingCount;
 				domPieChart.call(pieChart.data(streamingData));
 
 			
@@ -524,7 +541,6 @@ function createBarChartContainer(yearCount){
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
 
-	//createPieContainer(recentData);
 }
 
 function createTagContainer(taglist){
@@ -587,13 +603,16 @@ async function getData(){
 			var year = row[2];
 			var tags = row[6].replace(/,\s*/g, ",").split(',');
 			var date = row[7];
-			if(date in dailyCount){
-				dailyCount[date].push(film);
-			}
-			else{
-				dailyCount[date]=[film];
-			}
+
 			if(date.startsWith(2019)){
+
+				if(date in dailyCount){
+					dailyCount[date].push(film);
+				}
+				else{
+					dailyCount[date]=[film];
+				}
+
 				if(year in yearCount){
 					yearCount[year].push(film);
 				}
@@ -612,15 +631,6 @@ async function getData(){
 			}
 		}
 	});
-	//console.log(dailyCount);
-
-	//createTagContainer(taglist);
-	//console.log(taglist.filter(onlyUnique));
-	/*
-	for( var tag in taglist){
-		console.log(tag);
-		console.log(taglist[tag]);
-	}	
-	*/
+	
 }
 
