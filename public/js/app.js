@@ -11,9 +11,9 @@ var Catagories = {
 			"Film Studies","vimff","cinema salon"],
 	Others:["52filmsbywomen2019","commentary"]
 }
-let taglist = {};
-let yearCount = {};
-let dailyCount = {};
+var taglist = {};
+var yearCount = {};
+var dailyCount = {};
 getData()
 	.then(function(){
 		//createTagContainer(taglist);
@@ -27,7 +27,7 @@ function onlyUnique(value, index, self) {
 }
 
 function csvToArray(text) {
-    let p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
+    var p = '', row = [''], ret = [row], i = 0, r = 0, s = !0, l;
     for (l of text) {
         if ('"' === l) {
             if (s && l === p) row[i] += l;
@@ -58,7 +58,7 @@ function createHeatMapContainer(dailyCount){
 
 	}
 
-    const dateValues = dateData.map(function(dv){
+    var dateValues = dateData.map(function(dv){
       	var oDay = new Date(dv.date);
       	var offsetDate = oDay.setDate(oDay.getDate() + 1);
       	return{
@@ -69,23 +69,23 @@ function createHeatMapContainer(dailyCount){
      
     });  
 
-    const svg = d3.select("#svg");
+    var svg = d3.select("#svg");
 
 
-    const height = 250;
-	const width = 1000;
-	const margin = { left: 50, top: 10, right: 50, bottom: 10 };
+    var height = 250;
+	var width = 1000;
+	var margin = { left: 50, top: 10, right: 50, bottom: 10 };
 
-	const getRatio = side => (margin[side] / width) * 100 + '%';
+	var getRatio = side => (margin[side] / width) * 100 + '%';
 
-	const marginRatio = {
+	var marginRatio = {
 	  left: getRatio('left'),
 	  top: getRatio('top'),
 	  right: getRatio('right'),
 	  bottom: getRatio('bottom')
 	};
 
-	const container = d3.select('#svg')
+	var container = d3.select('#svg')
 	  	.style('padding',
 	    		marginRatio.top + ' ' + marginRatio.right + ' ' +
 	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
@@ -96,22 +96,22 @@ function createHeatMapContainer(dailyCount){
 	      (height + margin.top + margin.bottom)
 	  	);	
 
-	const cellSize = width / 52;
-    const yearHeight = cellSize * 7;
+	var cellSize = width / 52;
+    var yearHeight = cellSize * 7;
 
-    const years = d3
+    var years = d3
           .nest()
           .key(d => d.date.getUTCFullYear())
           .entries(dateValues)
           .reverse();
 
-    const values = dateValues.map(c => c.value);
-    const maxValue = d3.max(values);
-    const minValue = d3.min(values);
+    var values = dateValues.map(c => c.value);
+    var maxValue = d3.max(values);
+    var minValue = d3.min(values);
 
-   	const group = svg.append("g");
+   	var group = svg.append("g");
 
-    const year = group
+    var year = group
           .selectAll("g")
           .data(years)
           .join("g")
@@ -193,11 +193,11 @@ function createHeatMapContainer(dailyCount){
 		.on("mousemove", mousemove)
 		.on("mouseleave", mouseleave);
 
-	const legend = group.append('g')
+	var legend = group.append('g')
    						.attr('transform', `translate(${cellSize * 51 + 1.5 }, ${years.length * yearHeight + cellSize * 3})`)
 
 
-	const categories = [1,2,3,4,8]
+	var categories = [1,2,3,4,8]
 
 	
 	legend .selectAll('rect')
@@ -351,8 +351,8 @@ function createPieChartContainer(taglist){
 
 
 	
-	let streamingData = [], theatricalData = [];
-	let streamingCount = 0, theatricalCount = 0;
+	var streamingData = [], theatricalData = [];
+	var streamingCount = 0, theatricalCount = 0;
 
 	for(tag in taglist){
 		if(Catagories.Streaming.includes(tag) ){
@@ -375,10 +375,10 @@ function createPieChartContainer(taglist){
 		}
 	}
 
-	const width = 300;
-	const height = 300;
-	const radius =  width/2 - 10;
-	const donutWidth = 75;
+	var width = 300;
+	var height = 300;
+	var radius =  width/2 - 10;
+	var donutWidth = 75;
 
 	var pieChart = pieChart().outerRadius(radius).innerRadius(donutWidth);
 
@@ -441,14 +441,14 @@ function createBarChartContainer(yearCount){
 
 	recentData = data.splice(-2,2);
 
-	const height = 200;
-	const width = 700;
-	const barWidth = width / data.length;
-	const margin = { left: 50, top: 10, right: 50, bottom: 10 };
+	var height = 200;
+	var width = 700;
+	var barWidth = width / data.length;
+	var margin = { left: 50, top: 10, right: 50, bottom: 10 };
 
-	const getRatio = side => (margin[side] / width) * 100 + '%';
+	var getRatio = side => (margin[side] / width) * 100 + '%';
 
-	const marginRatio = {
+	var marginRatio = {
 	  left: getRatio('left'),
 	  top: getRatio('top'),
 	  right: getRatio('right'),
@@ -497,7 +497,7 @@ function createBarChartContainer(yearCount){
 					      .style("stroke", "none")
   					}
 
-	const svg = d3.select('div#chart-container').append('svg')
+	var svg = d3.select('div#chart-container').append('svg')
 	  	.style('padding',
 	    		marginRatio.top + ' ' + marginRatio.right + ' ' +
 	    		marginRatio.bottom + ' ' + marginRatio.left + ' ')
@@ -573,25 +573,20 @@ function createTagContainer(taglist){
     		}
       	}
 
-
-
-    	//button.setAttribute('onclick',showFilm(taglist[tag]));
-		
-		//console.log(taglist[tag]);
 	}	
 }
 
 async function getData(){
-	const response = await fetch(csvUrl);
-	const dataSet = await response.text();
-	const data = csvToArray(dataSet).slice(1);
+	var response = await fetch(csvUrl);
+	var dataSet = await response.text();
+	var data = csvToArray(dataSet).slice(1);
 
 	data.forEach(row => {
 		if(row != ''){
-			const film = row[1];
-			const year = row[2];
-			const tags = row[6].replace(/,\s*/g, ",").split(',');
-			const date = row[7];
+			var film = row[1];
+			var year = row[2];
+			var tags = row[6].replace(/,\s*/g, ",").split(',');
+			var date = row[7];
 			if(date in dailyCount){
 				dailyCount[date].push(film);
 			}
