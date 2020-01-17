@@ -45,7 +45,6 @@ function csvToArray(text) {
 };
 
 
-
 function createHeatMapContainer(dailyCount){
 	var dateData =[];
 
@@ -591,6 +590,9 @@ function createTagContainer(taglist){
 
 	}	
 }
+
+
+window
 
 async function getData(){
 	var response = await fetch(csvUrl);

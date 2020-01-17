@@ -1,3 +1,7 @@
+html {
+  scroll-behavior: smooth;
+}
+
 body{
 	margin:0;
 	font-family: "Ubuntu",sans-serif;
@@ -41,9 +45,7 @@ h1{
 }
 
 header{
-	position: fixed;
-	top: 0px;
-	width: 100%;
+	
 	background: #f8f8f8;
 	padding: 2em 0;
 }
@@ -90,16 +92,17 @@ nav a:hover, nav a:focus{
 		margin: .5em 0;
 	}
 }
-#heatmap-container{
-	margin: 0 auto;
-	margin-top: 200px;
+
+section{
+	margin-top: 2rem; 
 }
 
-@media (max-width: 675px){
-	#heatmap-container{
-		margin-top: 400px;
-	}
-}      
+
+#heatmap-container{
+	margin: 0 auto;
+}
+
+
 
 #heatmap-container svg {
 	margin: 0 auto;
