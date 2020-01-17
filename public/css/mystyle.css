@@ -41,9 +41,13 @@ h1{
 }
 
 header{
+	position: fixed;
+	top: 0px;
+	width: 100%;
 	background: #f8f8f8;
 	padding: 2em 0;
 }
+
 nav ul{
 	list-style: none;
 	padding: 0;
@@ -88,8 +92,14 @@ nav a:hover, nav a:focus{
 }
 #heatmap-container{
 	margin: 0 auto;
+	margin-top: 200px;
 }
-      
+
+@media (max-width: 675px){
+	#heatmap-container{
+		margin-top: 400px;
+	}
+}      
 
 #heatmap-container svg {
 	margin: 0 auto;
@@ -129,6 +139,7 @@ nav a:hover, nav a:focus{
 #chart-container{
 	margin: 0 auto;
 	width: 90%;
+	margin-top: 3rem;
 
 }
 
