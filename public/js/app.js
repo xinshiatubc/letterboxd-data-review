@@ -19,6 +19,7 @@ var dailyCount = {};
 getData()
 	.then(function(){
 		//createTagContainer(taglist);
+		console.log(JSON.stringify(taglist));
 		createPieChartContainer(taglist);
 		createBarChartContainer(yearCount);
 		createHeatMapContainer(dailyCount);
