@@ -6,7 +6,7 @@ In the past two years I have been using [Letterboxd](https://letterboxd.com) to
 
 ## Dependencies
 
-You will need Node.js to run it locally, so please install Node.js if you haven't done so yet. Node.js comes with a tool called NPM (Node Package Manager), which you can use to install HTTP server package.
+You will need Node.js to run it locally, so please install Node.js if you haven't done so yet. Node.js comes with a tool called NPM (Node Package Manager), which you can use to install express package.
 
 ## Run it Locally 
 
