@@ -28,4 +28,4 @@ http://localhost:8000
 ``` 
 
 ## Demo
-Check out the demo and create process [here](https://cindyshi.myportfolio.com/computer-animation)!
+Check out the demo and create process [here](https://cindyshi.myportfolio.com/film-viewing-data-visualization)!
